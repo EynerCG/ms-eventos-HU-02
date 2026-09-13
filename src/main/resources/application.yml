@@ -5,6 +5,11 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      # El session pooler de Supabase admite 15 conexiones en total, compartidas
+      # con ms-envios y con las herramientas del equipo. Sin este tope, una sola
+      # instancia las agota y las demas fallan con EMAXCONNSESSION.
+      maximum-pool-size: ${DB_POOL_SIZE:5}
   jpa:
     open-in-view: false
     hibernate:

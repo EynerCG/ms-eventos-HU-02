@@ -66,8 +66,16 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('Devuelve 404', () => pm.response.to.have.status(404));",
-              "pm.test('Informa que el envio no existe', () => pm.expect(pm.response.json().title).to.eql('Envio no encontrado'));"
+              "// El evento nunca debe registrarse. El codigo depende de si ms-envios esta arriba:",
+              "// 404 si responde que el envio no existe; 503 si ms-envios no esta disponible.",
+              "pm.test('El evento no se registra', () => pm.expect([404, 503]).to.include(pm.response.code));",
+              "pm.test('Se informa el motivo', () => {",
+              "  const titulo = pm.response.json().title;",
+              "  pm.expect(titulo).to.be.oneOf(['Envio no encontrado', 'ms-envios no disponible']);",
+              "  if (pm.response.code === 503) {",
+              "    console.log('ms-envios aun no esta desplegado: degradacion esperada (ver ADR-002)');",
+              "  }",
+              "});"
             ]
           }
         }

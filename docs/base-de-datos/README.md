@@ -290,7 +290,22 @@ El script ejecutable está en [`schema.sql`](schema.sql).
 
 A este volumen no se justifica particionamiento (lineamiento 5.3). Se revisará en el Sprint 3 con datos reales de uso.
 
-## 7. Trazabilidad con las historias de usuario
+## 7. Datos semilla y repetibilidad de las pruebas
+
+El esquema `eventos` se carga con cuatro envíos semilla, cada uno en un estado distinto, para poder probar la HU-02 sin depender del despliegue de HU-01:
+
+| Número de seguimiento | Estado inicial | Para qué sirve |
+|---|---|---|
+| `TRK-SEED-0001` | `REGISTRADO` | Registrar la recogida (criterio de aceptación 1) |
+| `TRK-SEED-0002` | `EN_TRANSITO` | Probar transiciones intermedias y rechazos |
+| `TRK-SEED-0003` | `EN_REPARTO` | Registrar la entrega (criterio de aceptación 2) |
+| `TRK-SEED-0004` | `ENTREGADO` | Verificar que un envío entregado no admite más eventos |
+
+**Importante:** los envíos semilla **se consumen** al usarlos. Un envío que ya fue entregado no vuelve a admitir eventos, así que una segunda corrida completa de la colección de Postman fallaría sobre datos ya modificados.
+
+Antes de cada corrida completa, ejecutar [`reset-datos-semilla.sql`](reset-datos-semilla.sql) en el SQL Editor de Supabase. Borra los eventos de los envíos `TRK-SEED-*` (el outbox se limpia solo por `ON DELETE CASCADE`) y restaura sus estados iniciales.
+
+## 8. Trazabilidad con las historias de usuario
 
 | Historia | Tablas involucradas | Consulta clave |
 |---|---|---|
