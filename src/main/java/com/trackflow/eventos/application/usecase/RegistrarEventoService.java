@@ -59,8 +59,9 @@ public class RegistrarEventoService implements RegistrarEventoUseCase {
                 comando.observaciones(),
                 comando.recibidoPor());
 
-        eventoRepository.guardar(evento);
+        // El envio rastreado se guarda primero: el evento lo referencia por llave foranea.
         envioRastreadoRepository.guardar(envio);
+        eventoRepository.guardar(evento);
         outboxRepository.encolar(MensajeOutbox.desde(evento));
 
         return evento;

@@ -10,6 +10,19 @@ Implementa la **HU-02 — Registrar un evento logístico de un envío**: registr
 | Responsables | Eyner Gómez, Juan Daniel Rincón |
 | Stack | Java 21 · Spring Boot 3.3 · Maven · PostgreSQL (Supabase) · Flyway |
 | Despliegue | Render (Docker) |
+| Estilo arquitectónico | Arquitectura Limpia + microservicio delimitado |
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [Estilo arquitectónico](docs/arquitectura/estilo-arquitectonico.md) | Justificación del estilo, decisiones técnicas y atributos de calidad |
+| [Diagramas de paquetes y componentes](docs/arquitectura/diagrama-paquetes-componentes.md) | Paquetes, componentes con interfaces, contexto y flujo de registro |
+| [ADR-001](docs/adr/ADR-001-estilo-arquitectonico.md) | Arquitectura Limpia dentro de un microservicio delimitado |
+| [ADR-002](docs/adr/ADR-002-integracion-resiliente-ms-envios.md) | Integración resiliente con ms-envios (outbox + proyección local) |
+| [ADR-003](docs/adr/ADR-003-persistencia-esquema-por-servicio.md) | PostgreSQL/Supabase con esquema exclusivo por servicio |
+| [Modelo de datos](docs/base-de-datos/README.md) | Diagrama ER, preguntas clave de negocio, modelo lógico y físico |
+| [Despliegue en Render](docs/despliegue-render.md) | Paso a paso, variables de entorno y limitaciones del plan gratuito |
 
 ## Criterios de aceptación y dónde se cumplen
 

@@ -94,23 +94,7 @@ public class OutboxJpaEntity {
         return ocurridoEn;
     }
 
-    public String getEstadoEnvio() {
-        return estadoEnvio;
-    }
-
     public int getIntentos() {
         return intentos;
-    }
-
-    public Instant getProximoIntentoEn() {
-        return proximoIntentoEn;
-    }
-
-    public Instant getSincronizadoEn() {
-        return sincronizadoEn;
-    }
-
-    public String getUltimoError() {
-        return ultimoError;
     }
 }
