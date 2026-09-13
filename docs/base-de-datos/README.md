@@ -35,7 +35,7 @@ TrackFlow gestiona el ciclo de vida de un envío dentro de una red logística. D
 erDiagram
     PERSONA ||--o{ ENVIO : "remite"
     PERSONA ||--o{ ENVIO : "recibe"
-    ENVIO ||..o{ EVENTO : "registra (por numero_seguimiento)"
+    ENVIO ||..o{ EVENTO : "registra por numero_seguimiento"
     ENVIO_RASTREADO ||--o{ EVENTO : "agrupa"
     EVENTO ||--|| OUTBOX_ESTADO : "encola"
 
@@ -55,8 +55,8 @@ erDiagram
         varchar numero_seguimiento UK "NOT NULL"
         bigint id_remitente FK "NOT NULL"
         bigint id_destinatario FK "NOT NULL"
-        varchar estado_actual "NOT NULL, CHECK"
-        numeric peso_kg "CHECK > 0"
+        varchar estado_actual "NOT NULL y CHECK"
+        numeric peso_kg "CHECK mayor que cero"
         varchar descripcion
         timestamptz registrado_en "NOT NULL"
         timestamptz actualizado_en
@@ -65,8 +65,8 @@ erDiagram
     EVENTO {
         uuid id PK
         varchar numero_seguimiento FK "NOT NULL"
-        varchar tipo_evento "NOT NULL, CHECK"
-        varchar estado_resultante "NOT NULL, CHECK"
+        varchar tipo_evento "NOT NULL y CHECK"
+        varchar estado_resultante "NOT NULL y CHECK"
         varchar punto_codigo "NOT NULL"
         varchar punto_nombre "NOT NULL"
         varchar punto_ciudad
@@ -78,7 +78,7 @@ erDiagram
 
     ENVIO_RASTREADO {
         varchar numero_seguimiento PK
-        varchar estado_actual "NOT NULL, CHECK"
+        varchar estado_actual "NOT NULL y CHECK"
         timestamptz ultimo_evento_en
     }
 
@@ -87,7 +87,7 @@ erDiagram
         varchar numero_seguimiento "NOT NULL"
         varchar estado "NOT NULL"
         timestamptz ocurrido_en "NOT NULL"
-        varchar estado_envio "NOT NULL, CHECK"
+        varchar estado_envio "NOT NULL y CHECK"
         integer intentos "NOT NULL"
         timestamptz proximo_intento_en "NOT NULL"
         timestamptz sincronizado_en
