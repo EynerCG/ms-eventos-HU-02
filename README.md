@@ -128,7 +128,7 @@ Requiere JDK 21 y Maven 3.9+.
 mvn clean verify
 ```
 
-Las pruebas no necesitan base de datos: usan H2 en memoria. El build falla si la cobertura baja del 65%. El reporte queda en `target/site/jacoco/index.html`.
+Las pruebas no necesitan base de datos: usan H2 en memoria.
 
 Para levantarlo contra Supabase:
 
@@ -144,7 +144,7 @@ Flyway crea el esquema `eventos` y carga los envíos semilla (`TRK-SEED-0001` a 
 
 ## Pruebas
 
-64 pruebas, **98% de cobertura de instrucciones**.
+Suite de pruebas unitarias y de integración (dominio, casos de uso, controladores, persistencia, cliente REST y outbox).
 
 La colección de Postman con los escenarios de éxito y error está en [`postman/`](postman/). Apunta la variable `baseUrl` a local o a Render.
 
@@ -155,9 +155,3 @@ Web Service tipo Docker, definido en `render.yaml`. Health check en `/actuator/h
 Variables de entorno requeridas: `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `MS_ENVIOS_BASE_URL`.
 
 > En el plan gratuito Render duerme el servicio tras 15 minutos sin tráfico: la primera petición puede tardar ~50 segundos. Tenerlo en cuenta al probar con Postman y al hacer la demo del sprint review.
-
-## Calidad
-
-El workflow `.github/workflows/sonar.yml` compila, ejecuta las pruebas, publica el reporte de JaCoCo y ejecuta el análisis de SonarCloud.
-
-Para activar Sonar hay que configurar en el repositorio el secreto `SONAR_TOKEN` y las variables `SONAR_PROJECT_KEY` y `SONAR_ORGANIZATION`. Mientras no exista el secreto, el paso de análisis se omite y el resto del pipeline sigue corriendo.
