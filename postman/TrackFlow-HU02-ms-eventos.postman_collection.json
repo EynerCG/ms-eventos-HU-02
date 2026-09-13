@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "TrackFlow - HU-02 ms-eventos",
+    "description": "Escenarios de la HU-02 (registrar evento logistico). Ajusta la variable baseUrl para apuntar a local o a Render.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ],
+  "item": [
+    {
+      "name": "AC1 - Evento sobre envio existente (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 201', () => pm.response.to.have.status(201));",
+              "pm.test('El envio pasa a EN_TRANSITO', () => pm.expect(pm.response.json().estadoResultante).to.eql('EN_TRANSITO'));",
+              "pm.test('Registra el punto', () => pm.expect(pm.response.json().punto.codigo).to.eql('CD-MDE'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"TRK-SEED-0001\",\n  \"tipoEvento\": \"RECOGIDA\",\n  \"punto\": { \"codigo\": \"CD-MDE\", \"nombre\": \"Centro Medellin\", \"ciudad\": \"Medellin\" },\n  \"ocurridoEn\": \"2026-09-13T10:00:00Z\",\n  \"observaciones\": \"Paquete recogido en origen\"\n}"
+        }
+      }
+    },
+    {
+      "name": "AC2 - Entrega al destinatario (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 201', () => pm.response.to.have.status(201));",
+              "pm.test('El envio queda ENTREGADO', () => pm.expect(pm.response.json().estadoResultante).to.eql('ENTREGADO'));",
+              "pm.test('Guarda quien recibio', () => pm.expect(pm.response.json().recibidoPor).to.eql('Ana Perez'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"TRK-SEED-0003\",\n  \"tipoEvento\": \"ENTREGA\",\n  \"punto\": { \"codigo\": \"DEST-001\", \"nombre\": \"Domicilio destinatario\", \"ciudad\": \"Medellin\" },\n  \"ocurridoEn\": \"2026-09-13T16:00:00Z\",\n  \"recibidoPor\": \"Ana Perez\"\n}"
+        }
+      }
+    },
+    {
+      "name": "AC3 - Numero de seguimiento inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 404', () => pm.response.to.have.status(404));",
+              "pm.test('Informa que el envio no existe', () => pm.expect(pm.response.json().title).to.eql('Envio no encontrado'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"TRK-NOEXISTE\",\n  \"tipoEvento\": \"RECOGIDA\",\n  \"punto\": { \"codigo\": \"CD-MDE\", \"nombre\": \"Centro Medellin\", \"ciudad\": \"Medellin\" },\n  \"ocurridoEn\": \"2026-09-13T10:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Error - Evento sobre envio ya entregado (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"TRK-SEED-0004\",\n  \"tipoEvento\": \"SALIDA_REPARTO\",\n  \"punto\": { \"codigo\": \"CD-MDE\", \"nombre\": \"Centro Medellin\", \"ciudad\": \"Medellin\" },\n  \"ocurridoEn\": \"2026-09-13T18:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Error - Transicion no permitida (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 409', () => pm.response.to.have.status(409));",
+              "pm.test('Explica el motivo', () => pm.expect(pm.response.json().detail).to.include('ENTREGA'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"TRK-SEED-0002\",\n  \"tipoEvento\": \"ENTREGA\",\n  \"punto\": { \"codigo\": \"DEST-001\", \"nombre\": \"Domicilio destinatario\", \"ciudad\": \"Medellin\" },\n  \"ocurridoEn\": \"2026-09-13T16:00:00Z\",\n  \"recibidoPor\": \"Ana Perez\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Error - Datos obligatorios faltantes (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 400', () => pm.response.to.have.status(400));",
+              "pm.test('Indica que falta', () => pm.expect(pm.response.json().errores).to.be.an('object'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/eventos", "host": ["{{baseUrl}}"], "path": ["api", "v1", "eventos"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroSeguimiento\": \"\",\n  \"punto\": { \"codigo\": \"\", \"nombre\": \"\" }\n}"
+        }
+      }
+    },
+    {
+      "name": "Historial del envio (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve 200', () => pm.response.to.have.status(200));",
+              "const cuerpo = pm.response.json();",
+              "pm.test('Trae el estado actual', () => pm.expect(cuerpo.estadoActual).to.be.a('string'));",
+              "pm.test('El historial esta en orden cronologico', () => {",
+              "  const fechas = cuerpo.eventos.map(e => new Date(e.ocurridoEn).getTime());",
+              "  pm.expect(fechas).to.eql([...fechas].sort((a, b) => a - b));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/envios/TRK-SEED-0001/eventos",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "envios", "TRK-SEED-0001", "eventos"]
+        }
+      }
+    },
+    {
+      "name": "Health check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('El servicio esta arriba', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/actuator/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["actuator", "health"]
+        }
+      }
+    }
+  ]
+}
